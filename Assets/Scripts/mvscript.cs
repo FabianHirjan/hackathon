@@ -16,6 +16,8 @@ public class mvscript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+           Vector3 eulerRotation = transform.rotation.eulerAngles;
+     transform.rotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, 0);
         if (Input.GetKey(KeyCode.A))
         {
             rb.AddForce(new Vector2(-speed * Time.deltaTime, 0), ForceMode2D.Impulse);
@@ -70,7 +72,7 @@ public class mvscript : MonoBehaviour
         {
             print("Grounded");
             grounded = 1;
-            rb.constraints = RigidbodyConstraints2D.FreezePositionY;
+
         }
     }
 
@@ -79,8 +81,6 @@ public class mvscript : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             grounded = 0;
-            rb.constraints = RigidbodyConstraints2D.None;
-
         }
     }
 }

@@ -6,7 +6,7 @@ public class buttonfcts : MonoBehaviour
 {
 public void startgm()
     {
-        SceneManager.LoadScene("LVL1");
+        SceneManager.LoadScene("debug");
     }
 
 public void quitgame()
