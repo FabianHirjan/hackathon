@@ -69,6 +69,8 @@
     <Compile Include="Assets\LowPoly Tiles Set\Scripts\sceneManager.cs" />
     <Compile Include="Assets\prog.cs" />
     <Compile Include="Assets\progresive.cs" />
+    <Compile Include="Assets\progresive1.cs" />
+    <Compile Include="Assets\reply.cs" />
     <Compile Include="Assets\Scripts\buttonfcts.cs" />
     <Compile Include="Assets\Scripts\mvscript.cs" />
     <Reference Include="Unity.Timeline.Editor">

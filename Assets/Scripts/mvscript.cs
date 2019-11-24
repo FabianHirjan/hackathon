@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class mvscript : MonoBehaviour
 {
+    public GameObject rela;
     private Rigidbody2D rb;
     public float speed = 15;
     public float jumpspeed;
@@ -14,8 +16,13 @@ public class mvscript : MonoBehaviour
     private float z;
     public AudioClip jumps;
     AudioSource audioSource;
+    public Text re;
 
     Animation anim;
+    private void Awake()
+    {
+        re.enabled = false;
+    }
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -24,15 +31,13 @@ public class mvscript : MonoBehaviour
         y = PlayerPrefs.GetFloat("posy");
         z = PlayerPrefs.GetFloat("posz");
 
-        Vector3 posVec = new Vector3(x, y,z);
-        rb.transform.position = posVec;
     }
     // Update is called once per frame
     void Update()
     {
-        PlayerPrefs.SetFloat("posx", transform.position.x);
-        PlayerPrefs.SetFloat("posy", transform.position.y);
-        PlayerPrefs.SetFloat("posz", transform.position.z);
+        //PlayerPrefs.SetFloat("posx", transform.position.x);
+       // PlayerPrefs.SetFloat("posy", transform.position.y);
+       // PlayerPrefs.SetFloat("posz", transform.position.z);
         Vector3 eulerRotation = transform.rotation.eulerAngles;
      transform.rotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, 0);
         if (Input.GetKey(KeyCode.A))
@@ -86,8 +91,26 @@ public class mvscript : MonoBehaviour
     }
     
     */
+    public void die()
+    {
+        Time.timeScale = 0;
+        re.enabled = true;
+        StartCoroutine(ExecuteAfterTime1(3));
+        respawn();
+    }
+    
+IEnumerator ExecuteAfterTime1(float time)
+{
+    yield return new WaitForSeconds(time);
 
-    void OnCollisionEnter2D(Collision2D col)
+}
+    public void respawn()
+    {
+        Time.timeScale = 1;
+        re.enabled = false ;
+        rb.transform.position = rela.transform.position; 
+    }
+void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.tag == "Ground")
         // By using {}, the condition apply to that entire scope, instead of the next line.
@@ -95,6 +118,10 @@ public class mvscript : MonoBehaviour
             print("Grounded");
             grounded = 1;
 
+        }
+        if(col.gameObject.tag == "Respawn")
+        {
+            die();
         }
     }
 
@@ -114,5 +141,6 @@ public class mvscript : MonoBehaviour
             PlayerPrefs.SetFloat("posz", transform.position.z);
         }
     }
+       
 
 }
