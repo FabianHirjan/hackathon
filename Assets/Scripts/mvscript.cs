@@ -7,23 +7,28 @@ public class mvscript : MonoBehaviour
     private Rigidbody2D rb;
     public float speed = 15;
     public float jumpspeed;
-    private bool usable = true;
     private int grounded = 0;
+    Animator anim;
     void Start()
     {
+        anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
     // Update is called once per frame
     void Update()
     {
+
            Vector3 eulerRotation = transform.rotation.eulerAngles;
      transform.rotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, 0);
         if (Input.GetKey(KeyCode.A))
         {
+            transform.rotation = Quaternion.Euler(eulerRotation.x, -180, eulerRotation.z);
             rb.AddForce(new Vector2(-speed * Time.deltaTime, 0), ForceMode2D.Impulse);
         }
         if (Input.GetKey(KeyCode.D))
         {
+            transform.rotation = Quaternion.Euler(eulerRotation.x, 0, eulerRotation.z);
+            anim.SetTrigger("trg");
             rb.AddForce(new Vector2(speed * Time.deltaTime, 0), ForceMode2D.Impulse);
         }
         if (Input.GetKey(KeyCode.Space))
@@ -31,16 +36,14 @@ public class mvscript : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.None;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
             print(grounded);
-            if (grounded == 1 && usable == true)
+            if (grounded == 1)
             {
                 rb.AddForce(new Vector2(0, jumpspeed * Time.deltaTime), ForceMode2D.Impulse);
-                usable = false;
                 StartCoroutine(ExecuteAfterTime(1));
             }
             IEnumerator ExecuteAfterTime(float time)
             {
                 yield return new WaitForSeconds(time);
-                usable = true;
 
             }
         }
@@ -83,4 +86,5 @@ public class mvscript : MonoBehaviour
             grounded = 0;
         }
     }
+
 }
