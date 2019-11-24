@@ -13,7 +13,7 @@ public class progresive : MonoBehaviour
     void Start()
     {
         message = guiText.text;
-        guiText.text = ""; // Clear the GUI text
+        guiText.text = "";
         StartCoroutine(TypeLetters());
         
     }

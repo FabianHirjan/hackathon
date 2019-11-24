@@ -9,6 +9,12 @@ public class camera : MonoBehaviour
 
     private Vector3 offset;
 
+    private void Awake()
+    {
+        Screen.SetResolution(1920, 1080, true);
+        Cursor.visible = false;
+    }
+
     void Start()
     {
         offset = transform.position - player.transform.position;

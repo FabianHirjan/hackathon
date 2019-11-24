@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class mvscript : MonoBehaviour
 {
@@ -8,17 +9,31 @@ public class mvscript : MonoBehaviour
     public float speed = 15;
     public float jumpspeed;
     private int grounded = 0;
-    Animator anim;
+    private float x;
+    private float y;
+    private float z;
+    public AudioClip jumps;
+    AudioSource audioSource;
+
+    Animation anim;
     void Start()
     {
-        anim = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
+        x = PlayerPrefs.GetFloat("posx");
+        y = PlayerPrefs.GetFloat("posy");
+        z = PlayerPrefs.GetFloat("posz");
+
+        Vector3 posVec = new Vector3(x, y,z);
+        rb.transform.position = posVec;
     }
     // Update is called once per frame
     void Update()
     {
-
-           Vector3 eulerRotation = transform.rotation.eulerAngles;
+        PlayerPrefs.SetFloat("posx", transform.position.x);
+        PlayerPrefs.SetFloat("posy", transform.position.y);
+        PlayerPrefs.SetFloat("posz", transform.position.z);
+        Vector3 eulerRotation = transform.rotation.eulerAngles;
      transform.rotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, 0);
         if (Input.GetKey(KeyCode.A))
         {
@@ -28,7 +43,6 @@ public class mvscript : MonoBehaviour
         if (Input.GetKey(KeyCode.D))
         {
             transform.rotation = Quaternion.Euler(eulerRotation.x, 0, eulerRotation.z);
-            anim.SetTrigger("trg");
             rb.AddForce(new Vector2(speed * Time.deltaTime, 0), ForceMode2D.Impulse);
         }
         if (Input.GetKey(KeyCode.Space))
@@ -39,6 +53,7 @@ public class mvscript : MonoBehaviour
             if (grounded == 1)
             {
                 rb.AddForce(new Vector2(0, jumpspeed * Time.deltaTime), ForceMode2D.Impulse);
+                audioSource.PlayOneShot(jumps, 0.7F);
                 StartCoroutine(ExecuteAfterTime(1));
             }
             IEnumerator ExecuteAfterTime(float time)
@@ -46,6 +61,10 @@ public class mvscript : MonoBehaviour
                 yield return new WaitForSeconds(time);
 
             }
+        }
+        if(Input.GetKey(KeyCode.C))
+        {
+            SceneManager.LoadScene("Finish");
         }
 
     }
@@ -84,6 +103,15 @@ public class mvscript : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             grounded = 0;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "trger")
+        {
+            PlayerPrefs.SetFloat("posx", transform.position.x);
+            PlayerPrefs.SetFloat("posy", transform.position.y);
+            PlayerPrefs.SetFloat("posz", transform.position.z);
         }
     }
 

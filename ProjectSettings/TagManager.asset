@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - draggable
+  - trger
   layers:
   - Default
   - TransparentFX
