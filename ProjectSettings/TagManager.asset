@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
-  - draggable
-  - trger
+  - floor
+  - wall
   layers:
   - Default
   - TransparentFX
