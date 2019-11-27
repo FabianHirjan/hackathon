@@ -63,6 +63,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\LowPoly Tiles Set\Scripts\movem.cs" />
+    <Compile Include="Assets\LowPoly Tiles Set\Scripts\sceneManager.cs" />
     <Compile Include="Assets\Scripts\buttonfcts.cs" />
     <Compile Include="Assets\Scripts\camera.cs" />
     <Compile Include="Assets\Scripts\debug.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="Assets\Scripts\prog.cs" />
     <Compile Include="Assets\Scripts\progresive.cs" />
     <Compile Include="Assets\Scripts\progresive1.cs" />
+    <Compile Include="Assets\Scripts\qualitysel.cs" />
     <Compile Include="Assets\Scripts\reply.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/Fabian/Desktop/New Unity Project/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

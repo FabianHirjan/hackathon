@@ -6,125 +6,141 @@ using UnityEngine.UI;
 
 public class mvscript : MonoBehaviour
 {
-    private RaycastHit2D landingHit;
-    private RaycastHit2D leftHit;
-    private RaycastHit2D rightHit;
-    private RaycastHit2D topHit;
-    private BoxCollider2D playerColider;
+    public GameObject rela;
+    private Rigidbody2D rb;
+    public float speed = 15;
+    public float jumpspeed;
+    private int grounded = 0;
+    private float x;
+    private float y;
+    private float z;
+    public AudioClip jumps;
+    AudioSource audioSource;
+    public Text re;
 
-    float rightPositionX;
-    float topPositionY;
-    float bottomPositionY;
-    float leftPositionX;
-    Rigidbody2D playerBody;
-
-    public float speed;
-    public float jumpHeight;
-
-    public bool allowedToJump;
-    public bool touchingWall;
-    // Start is called before the first frame update
+    Animation anim;
+    private void Awake()
+    {
+        re.enabled = false;
+    }
     void Start()
     {
-        allowedToJump = true;
-
-        playerBody = GetComponent<Rigidbody2D>();
-        playerColider = GetComponent<BoxCollider2D>();
-        rightPositionX = playerColider.bounds.max.x + .1f;
-        topPositionY = playerColider.bounds.max.y + .1f;
-        bottomPositionY = playerColider.bounds.min.y - .1f;
-        leftPositionX = playerColider.bounds.min.x - .1f;
+        audioSource = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody2D>();
+        x = PlayerPrefs.GetFloat("posx");
+        y = PlayerPrefs.GetFloat("posy");
+        z = PlayerPrefs.GetFloat("posz");
 
     }
-
+    // Update is called once per frame
     void Update()
     {
-
-        GetInput();
-
-        landingHit = Physics2D.Raycast(new Vector2(this.transform.position.x, bottomPositionY + transform.position.y), new Vector2(transform.position.x, 0.2f));
-        leftHit = Physics2D.Raycast(new Vector2(leftPositionX + transform.position.x, this.transform.position.y), new Vector2(leftPositionX - 0.2f, 0.0f), 0.2f);
-        rightHit = Physics2D.Raycast(new Vector2(rightPositionX + transform.position.x, this.transform.position.y), new Vector2(rightPositionX + 0.2f, 0.0f), 0.2f);
-        topHit = Physics2D.Raycast(new Vector2(this.transform.position.x, topPositionY + transform.position.y), new Vector2(transform.position.x, 0.2f), 0.2f);
-
-        Debug.DrawRay(new Vector2(rightPositionX + transform.position.x, this.transform.position.y), new Vector2(rightPositionX + 0.2f, 0.0f), Color.black);
-
-        //Debug.Log(leftHit.collider.tag);
-        if (landingHit.collider.tag == "floor")
+        //PlayerPrefs.SetFloat("posx", transform.position.x);
+       // PlayerPrefs.SetFloat("posy", transform.position.y);
+       // PlayerPrefs.SetFloat("posz", transform.position.z);
+        Vector3 eulerRotation = transform.rotation.eulerAngles;
+     transform.rotation = Quaternion.Euler(eulerRotation.x, eulerRotation.y, 0);
+        if (Input.GetKey(KeyCode.A))
         {
-            allowedToJump = true;
-            Debug.Log("Hit the floor");
+            transform.rotation = Quaternion.Euler(eulerRotation.x, -180, eulerRotation.z);
+            rb.AddForce(new Vector2(-speed * Time.deltaTime, 0), ForceMode2D.Impulse);
         }
-        if (topHit.collider != null)
+        if (Input.GetKey(KeyCode.D))
         {
-            if (topHit.collider.tag == "floor")
+            transform.rotation = Quaternion.Euler(eulerRotation.x, 0, eulerRotation.z);
+            rb.AddForce(new Vector2(speed * Time.deltaTime, 0), ForceMode2D.Impulse);
+        }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            rb.constraints = RigidbodyConstraints2D.None;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            print(grounded);
+            if (grounded == 1)
             {
-                allowedToJump = false;
-                Debug.Log("Hit the top");
+                rb.AddForce(new Vector2(0, jumpspeed * Time.deltaTime), ForceMode2D.Impulse);
+                audioSource.PlayOneShot(jumps, 0.7F);
+                StartCoroutine(ExecuteAfterTime(1));
+            }
+            IEnumerator ExecuteAfterTime(float time)
+            {
+                yield return new WaitForSeconds(time);
+
             }
         }
-        if (leftHit.collider != null)
+        if(Input.GetKey(KeyCode.C))
         {
-            if (leftHit.collider.tag == "wall")
-            {
-
-                touchingWall = true;
-            }
-
+            SceneManager.LoadScene("Finish");
         }
-
-
-        if (rightHit.collider != null)
-        {
-            if (rightHit.collider.tag == "wall")
-            {
-                touchingWall = true;
-            }
-        }
-
-
-
-
-        if (rightHit.collider == null && leftHit.collider == null)
-        {
-            touchingWall = false;
-        }
-
-        if (touchingWall)
-        {
-            allowedToJump = true;
-        }
-
-
-
-        /*   Debug.DrawRay(new Vector2(this.transform.position.x, bottomPositionY + transform.position.y), new Vector2(0, -0.5f), Color.red);
-           Debug.DrawRay(new Vector2(this.transform.position.x, topPositionY + transform.position.y), new Vector2(0, 0.2f), Color.red);
-           Debug.DrawRay(new Vector2(leftPositionX + transform.position.x, this.transform.position.y), new Vector2(leftPositionX - 0.2f, 0), Color.red);
-           Debug.DrawRay(new Vector2(rightPositionX + transform.position.x, this.transform.position.y), new Vector2(0.2f, 0), Color.red);*/
 
     }
-    void FixedUpdate()
+    /*
+    private void OnTriggerEnter2D(Collider2D other)
     {
-
+        // Stops the player from being affected by gravity while on ladder
+        if (other.tag == "scara")
+            rb.gravityScale = 0;
+        movable = true;
     }
-    private void GetInput()
+
+    private void OnTriggerExit2D(Collider2D other)
     {
+        // Stops the player from being affected by gravity while on ladder
+        if (other.tag == "scara")
+            rb.gravityScale = 1;
+        movable = false;
+    }
+    
+    */
+    public void die()
+    {
+        Time.timeScale = 0;
+        re.enabled = true;
+        StartCoroutine(ExecuteAfterTime1(3));
+        respawn();
+    }
+    
+IEnumerator ExecuteAfterTime1(float time)
+{
+    yield return new WaitForSeconds(time);
 
-        float direction = Input.GetAxisRaw("Horizontal");
-
-
-        float move = 0.0f;
-        if (direction != 0.0f)
+}
+    public void respawn()
+    {
+        Time.timeScale = 1;
+        re.enabled = false ;
+        rb.transform.position = rela.transform.position; 
+    }
+void OnCollisionStay2D (Collision2D col)
+    {
+        if (col.gameObject.tag == "Ground")
+        // By using {}, the condition apply to that entire scope, instead of the next line.
         {
-            move = direction * speed;
-            playerBody.velocity = new Vector2(move, playerBody.velocity.y);
+            print("Grounded");
+            grounded = 1;
+
         }
-        if (Input.GetKey(KeyCode.Space) && allowedToJump)
+        if(col.gameObject.tag == "Respawn")
         {
-            playerBody.velocity = new Vector2(playerBody.velocity.x, jumpHeight);
-            allowedToJump = false;
+            die();
         }
     }
 
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            grounded = 0;
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "trger")
+        {
+            PlayerPrefs.SetFloat("posx", transform.position.x);
+            PlayerPrefs.SetFloat("posy", transform.position.y);
+            PlayerPrefs.SetFloat("posz", transform.position.z);
+        }
+    }
+       
 
 }
